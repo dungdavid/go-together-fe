@@ -44,11 +44,11 @@ export function TopNav() {
         <div className="flex shrink-0 items-center gap-3">
           <div className="flex items-center -space-x-2">
             <div className="relative flex size-8 items-center justify-center rounded-full bg-secondary ring-2 ring-background">
-              <span className="text-[10px] font-bold text-entity-partner-a">NS</span>
+              <span className="text-[10px] font-bold text-entity-partner-a">ĐD</span>
               <span className="absolute bottom-0 right-0 size-2 rounded-full bg-primary ring-1 ring-background" />
             </div>
             <div className="relative flex size-8 items-center justify-center rounded-full bg-secondary ring-2 ring-background">
-              <span className="text-[10px] font-bold text-entity-partner-b">HT</span>
+              <span className="text-[10px] font-bold text-entity-partner-b">ĐD</span>
               <span className="absolute bottom-0 right-0 size-2 rounded-full bg-entity-shared ring-1 ring-background" />
             </div>
           </div>

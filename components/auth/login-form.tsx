@@ -71,7 +71,7 @@ export function LoginForm({ isModal }: { isModal: boolean }) {
               type="text"
               required
               autoComplete="username"
-              placeholder="vd: ngocson"
+              placeholder="vd: dinhdung"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
