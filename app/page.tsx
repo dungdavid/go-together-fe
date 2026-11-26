@@ -113,9 +113,9 @@ export default function HomePage() {
           <div className="relative z-10 flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-baseline gap-3">
-                <span className="font-heading text-4xl italic tracking-tight">
+                <span className="font-sans text-4xl font-semibold tabular-nums tracking-tight">
                   {journeyStats.provincesVisited}
-                  <span className="text-xl not-italic text-muted-foreground">/{journeyStats.provincesTotal}</span>
+                  <span className="text-xl font-medium text-muted-foreground">/{journeyStats.provincesTotal}</span>
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary-strong">
                   <TrendingUp className="size-3.5" />+{journeyStats.newThisYear} trong 2026
@@ -194,7 +194,7 @@ export default function HomePage() {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-heading text-3xl italic tracking-tight">{coveragePercent}%</span>
+              <span className="font-sans text-3xl font-semibold tabular-nums tracking-tight">{coveragePercent}%</span>
               <span className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
                 {journeyStats.provincesVisited}/{journeyStats.provincesTotal} Tỉnh
               </span>
@@ -303,7 +303,7 @@ export default function HomePage() {
             <UtensilsCrossed className="size-[18px] text-muted-foreground" />
           </div>
           <div className="my-1 flex items-baseline gap-2">
-            <span className="font-heading text-2xl">{foodStats.totalDishes}</span>
+            <span className="font-sans text-2xl font-semibold tabular-nums">{foodStats.totalDishes}</span>
             <span className="text-sm text-muted-foreground">món ngon bản địa đặc trưng</span>
           </div>
           <div
@@ -365,7 +365,7 @@ export default function HomePage() {
           </div>
           <div className="my-2 flex items-baseline justify-between">
             <div>
-              <span className="font-heading text-2xl font-light">
+              <span className="font-sans text-2xl font-semibold tabular-nums">
                 {weatherForecast.tempC}°<span className="text-xl font-normal text-muted-foreground">C</span>
               </span>
               <span className="block text-sm text-muted-foreground">{weatherForecast.condition}</span>
