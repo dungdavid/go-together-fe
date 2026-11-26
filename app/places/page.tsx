@@ -14,12 +14,12 @@ export default function PlacesPage() {
   return (
     <div className="pb-24 md:pb-10">
       <PageHeader
-        title="Saved Places"
-        description={`${places?.length ?? 0} places you've logged so far.`}
+        title="Địa điểm đã lưu"
+        description={`${places?.length ?? 0} địa điểm đã ghi lại.`}
         action={
           <Link href="/add" className={buttonVariants({ className: "hidden sm:inline-flex" })}>
             <Plus className="size-4" />
-            Add place
+            Thêm địa điểm
           </Link>
         }
       />

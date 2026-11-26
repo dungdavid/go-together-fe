@@ -54,7 +54,7 @@ function NavLink({
       href={href}
       className={cn(
         "flex flex-col items-center gap-1 px-3 py-1.5 text-xs font-medium min-w-[48px] min-h-[48px] justify-center",
-        isActive ? "text-primary" : "text-muted-foreground"
+        isActive ? "text-primary-strong font-semibold" : "text-muted-foreground"
       )}
     >
       <Icon className="size-5" />

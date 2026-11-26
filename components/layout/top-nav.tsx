@@ -55,7 +55,7 @@ export function TopNav() {
 
           <button
             type="button"
-            className="hidden items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:flex"
+            className="hidden items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground lg:flex"
           >
             <Search className="size-4" />
             <span>Tìm</span>
@@ -64,6 +64,7 @@ export function TopNav() {
 
           <Link
             href="/add"
+            aria-label="Thêm chuyến đi"
             className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_0_20px_-4px_rgba(255,90,60,0.4)] transition-all hover:brightness-110 active:scale-95"
           >
             <Plus className="size-[18px]" />

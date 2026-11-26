@@ -9,7 +9,7 @@ export default function MapPage() {
 
   return (
     <div className="flex h-[calc(100dvh-7.5rem)] flex-col md:h-screen">
-      <PageHeader title="Map" description="All the places you've saved, pinned." />
+      <PageHeader title="Bản đồ" description="Toàn bộ địa điểm hai bạn đã lưu và ghim lại." />
       <div className="relative flex-1">
         <PlaceMap places={places ?? []} />
       </div>

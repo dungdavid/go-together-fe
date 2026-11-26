@@ -22,8 +22,9 @@ export function PlaceCard({ place }: { place: Place }) {
               className="object-cover"
             />
           ) : (
-            <div className="flex size-full items-center justify-center text-muted-foreground/40">
+            <div className="flex size-full flex-col items-center justify-center gap-1.5 text-muted-foreground">
               <ImageOff className="size-8" />
+              <span className="text-xs">Chưa có ảnh bìa</span>
             </div>
           )}
         </div>
@@ -34,7 +35,7 @@ export function PlaceCard({ place }: { place: Place }) {
           </div>
           <h3 className="font-semibold leading-snug">{place.name}</h3>
           <p className="text-xs text-muted-foreground">
-            Visited {formatVisitedDate(place.visitedAt)}
+            Đã ghé {formatVisitedDate(place.visitedAt)}
           </p>
           {total > 0 && (
             <div className="flex items-center gap-2 pt-1">
