@@ -1,0 +1,100 @@
+export type ProvinceRegion = "bac" | "trung" | "nam";
+
+export const regionLabels: Record<ProvinceRegion, string> = {
+  bac: "Miền Bắc",
+  trung: "Miền Trung & Tây Nguyên",
+  nam: "Miền Nam & Miền Tây",
+};
+
+/** Sub-region tag shown next to the auto-detected region, matches the mockup's "Tây Bắc Bộ" style chip. */
+export const provinceSubRegion: Record<string, string> = {
+  "Lào Cai (Sa Pa)": "Tây Bắc",
+  "Sơn La": "Tây Bắc",
+  "Lai Châu": "Tây Bắc",
+  "Điện Biên": "Tây Bắc",
+  "Hòa Bình": "Tây Bắc",
+  "Yên Bái": "Tây Bắc",
+  "Hà Giang": "Đông Bắc",
+  "Cao Bằng": "Đông Bắc",
+  "Bắc Kạn": "Đông Bắc",
+  "Lạng Sơn": "Đông Bắc",
+  "Tuyên Quang": "Đông Bắc",
+  "Thái Nguyên": "Đông Bắc",
+  "Quảng Ninh": "Đông Bắc",
+  "Hà Nội": "Đồng bằng sông Hồng",
+  "Hải Phòng": "Đồng bằng sông Hồng",
+};
+
+export interface Province {
+  name: string;
+  asciiName: string;
+  region: ProvinceRegion;
+}
+
+export const provinces: Province[] = [
+  { name: "Hà Nội", asciiName: "Ha Noi city", region: "bac" },
+  { name: "Hải Phòng", asciiName: "Hai Phong city", region: "bac" },
+  { name: "Quảng Ninh", asciiName: "Quang Ninh", region: "bac" },
+  { name: "Bắc Giang", asciiName: "Bac Giang", region: "bac" },
+  { name: "Bắc Ninh", asciiName: "Bac Ninh", region: "bac" },
+  { name: "Hải Dương", asciiName: "Hai Duong", region: "bac" },
+  { name: "Hưng Yên", asciiName: "Hung Yen", region: "bac" },
+  { name: "Hà Nam", asciiName: "Ha Nam", region: "bac" },
+  { name: "Nam Định", asciiName: "Nam Dinh", region: "bac" },
+  { name: "Thái Bình", asciiName: "Thai Binh", region: "bac" },
+  { name: "Ninh Bình", asciiName: "Ninh Binh", region: "bac" },
+  { name: "Vĩnh Phúc", asciiName: "Vinh Phuc", region: "bac" },
+  { name: "Phú Thọ", asciiName: "Phu Tho", region: "bac" },
+  { name: "Thái Nguyên", asciiName: "Thai Nguyen", region: "bac" },
+  { name: "Bắc Kạn", asciiName: "Bac Kan", region: "bac" },
+  { name: "Cao Bằng", asciiName: "Cao Bang", region: "bac" },
+  { name: "Lạng Sơn", asciiName: "Lang Son", region: "bac" },
+  { name: "Tuyên Quang", asciiName: "Tuyen Quang", region: "bac" },
+  { name: "Hà Giang", asciiName: "Ha Giang", region: "bac" },
+  { name: "Lào Cai (Sa Pa)", asciiName: "Lao Cai", region: "bac" },
+  { name: "Yên Bái", asciiName: "Yen Bai", region: "bac" },
+  { name: "Lai Châu", asciiName: "Lai Chau", region: "bac" },
+  { name: "Điện Biên", asciiName: "Dien Bien", region: "bac" },
+  { name: "Sơn La", asciiName: "Son La", region: "bac" },
+  { name: "Hòa Bình", asciiName: "Hoa Binh", region: "bac" },
+
+  { name: "Thanh Hóa", asciiName: "Thanh Hoa", region: "trung" },
+  { name: "Nghệ An", asciiName: "Nghe An", region: "trung" },
+  { name: "Hà Tĩnh", asciiName: "Ha Tinh", region: "trung" },
+  { name: "Quảng Bình", asciiName: "Quang Binh", region: "trung" },
+  { name: "Quảng Trị", asciiName: "Quang Tri", region: "trung" },
+  { name: "Thừa Thiên Huế", asciiName: "Thua Thien - Hue", region: "trung" },
+  { name: "Đà Nẵng", asciiName: "Da Nang city", region: "trung" },
+  { name: "Quảng Nam", asciiName: "Quang Nam", region: "trung" },
+  { name: "Quảng Ngãi", asciiName: "Quang Ngai", region: "trung" },
+  { name: "Bình Định", asciiName: "Binh Dinh", region: "trung" },
+  { name: "Phú Yên", asciiName: "Phu Yen", region: "trung" },
+  { name: "Khánh Hòa", asciiName: "Khanh Hoa", region: "trung" },
+  { name: "Ninh Thuận", asciiName: "Ninh Thuan", region: "trung" },
+  { name: "Bình Thuận", asciiName: "Binh Thuan", region: "trung" },
+  { name: "Kon Tum", asciiName: "Kon Tum", region: "trung" },
+  { name: "Gia Lai", asciiName: "Gia Lai", region: "trung" },
+  { name: "Đắk Lắk", asciiName: "Dak Lak", region: "trung" },
+  { name: "Đắk Nông", asciiName: "Dak Nong", region: "trung" },
+  { name: "Lâm Đồng", asciiName: "Lam Dong", region: "trung" },
+
+  { name: "TP. Hồ Chí Minh", asciiName: "Ho Chi Minh city", region: "nam" },
+  { name: "Bình Dương", asciiName: "Binh Duong", region: "nam" },
+  { name: "Đồng Nai", asciiName: "Dong Nai", region: "nam" },
+  { name: "Bà Rịa - Vũng Tàu", asciiName: "Ba Ria - Vung Tau", region: "nam" },
+  { name: "Bình Phước", asciiName: "Binh Phuoc", region: "nam" },
+  { name: "Tây Ninh", asciiName: "Tay Ninh", region: "nam" },
+  { name: "Long An", asciiName: "Long An", region: "nam" },
+  { name: "Tiền Giang", asciiName: "Tien Giang", region: "nam" },
+  { name: "Bến Tre", asciiName: "Ben Tre", region: "nam" },
+  { name: "Trà Vinh", asciiName: "Tra Vinh", region: "nam" },
+  { name: "Vĩnh Long", asciiName: "Vinh Long", region: "nam" },
+  { name: "Đồng Tháp", asciiName: "Dong Thap", region: "nam" },
+  { name: "An Giang", asciiName: "An Giang", region: "nam" },
+  { name: "Kiên Giang", asciiName: "Kien Giang", region: "nam" },
+  { name: "Cần Thơ", asciiName: "Can Tho city", region: "nam" },
+  { name: "Hậu Giang", asciiName: "Hau Giang", region: "nam" },
+  { name: "Sóc Trăng", asciiName: "Soc Trang", region: "nam" },
+  { name: "Bạc Liêu", asciiName: "Bac Lieu", region: "nam" },
+  { name: "Cà Mau", asciiName: "Ca Mau", region: "nam" },
+];
