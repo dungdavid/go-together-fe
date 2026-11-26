@@ -11,7 +11,8 @@ export interface DraftChecklistItem {
 
 export interface DraftPhoto {
   id: string;
-  url: string;
+  file: File;
+  previewUrl: string;
   isCover: boolean;
 }
 

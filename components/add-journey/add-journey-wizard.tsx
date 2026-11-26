@@ -53,7 +53,11 @@ export function AddJourneyWizard({ isModal }: { isModal: boolean }) {
   }
 
   async function handleSave() {
-    await createJourney.mutateAsync(draft);
+    try {
+      await createJourney.mutateAsync(draft);
+    } catch {
+      // surfaced via createJourney.isError / createJourney.error below
+    }
   }
 
   const canContinueStep1 = draft.province !== null && draft.placeName.trim().length > 0;
@@ -131,6 +135,11 @@ export function AddJourneyWizard({ isModal }: { isModal: boolean }) {
           </div>
 
           <footer className="relative flex shrink-0 items-center justify-between bg-secondary/40 px-8 py-4">
+            {createJourney.isError && (
+              <p className="absolute -top-8 left-8 text-xs font-medium text-destructive">
+                {createJourney.error instanceof Error ? createJourney.error.message : "Có lỗi xảy ra, vui lòng thử lại"}
+              </p>
+            )}
             <button className="flex items-center gap-1.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
               <Save className="size-4" />
               Lưu nháp
@@ -221,6 +230,11 @@ export function AddJourneyWizard({ isModal }: { isModal: boolean }) {
           </div>
 
           <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-border bg-card/95 px-5 pb-safe pt-3 backdrop-blur-lg">
+            {createJourney.isError && (
+              <p className="text-center text-xs font-medium text-destructive">
+                {createJourney.error instanceof Error ? createJourney.error.message : "Có lỗi xảy ra, vui lòng thử lại"}
+              </p>
+            )}
             {step < 3 ? (
               <button
                 disabled={step === 1 && !canContinueStep1}
