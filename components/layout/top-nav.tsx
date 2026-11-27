@@ -16,10 +16,10 @@ export function TopNav() {
   return (
     <header className="sticky top-0 z-40 hidden h-16 w-full border-b border-border bg-background/80 backdrop-blur-xl md:flex">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 lg:px-12">
-        <div className="flex shrink-0 items-center gap-3">
+        <Link href="/" className="flex shrink-0 items-center gap-3">
           <Compass className="size-[26px] text-primary" />
           <span className="font-heading text-lg tracking-tight">Nhật Ký Xê Dịch</span>
-        </div>
+        </Link>
 
         <nav className="flex items-center gap-1 rounded-full bg-muted p-1">
           {topNavItems.map((item) => {
