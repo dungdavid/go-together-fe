@@ -32,14 +32,14 @@ export default function ProfilePage() {
   if (!mounted || isLoading || !user) {
     return (
       <div className="pb-24 md:pb-10">
-        <PageHeader title="Profile" />
+        <PageHeader title="Hồ sơ" />
       </div>
     );
   }
 
   return (
     <div className="pb-24 md:pb-10">
-      <PageHeader title="Profile" />
+      <PageHeader title="Hồ sơ" />
 
       <div className="mx-auto max-w-2xl px-4 md:px-8">
         <Card className="flex flex-row items-center gap-4 p-5">
@@ -55,23 +55,23 @@ export default function ProfilePage() {
         </Card>
 
         <Card className="mt-6 p-0">
-          <SettingsRow icon={Moon} label="Dark mode">
+          <SettingsRow icon={Moon} label="Chế độ tối">
             <Switch
               checked={resolvedTheme === "dark"}
               onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
             />
           </SettingsRow>
           <Separator />
-          <SettingsRow icon={Bell} label="Notifications" trailing />
+          <SettingsRow icon={Bell} label="Thông báo" trailing />
           <Separator />
-          <SettingsRow icon={UserRound} label="Account" trailing />
+          <SettingsRow icon={UserRound} label="Tài khoản" trailing />
           <Separator />
-          <SettingsRow icon={Info} label="About Go Together" trailing />
+          <SettingsRow icon={Info} label="Giới thiệu Nhật Ký Xê Dịch" trailing />
         </Card>
 
         <Card className="mt-6 p-0">
           <button className="w-full" onClick={handleSignOut}>
-            <SettingsRow icon={LogOut} label="Sign out" destructive trailing />
+            <SettingsRow icon={LogOut} label="Đăng xuất" destructive trailing />
           </button>
         </Card>
       </div>

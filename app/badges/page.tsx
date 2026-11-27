@@ -12,13 +12,13 @@ export default function BadgesPage() {
         description={`Đã mở khoá ${earnedCount}/${badges.length} danh hiệu.`}
       />
 
-      <section className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-3 md:px-8">
+      <section className="mx-auto grid max-w-5xl grid-cols-1 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-3 md:px-8">
         {badges.map((badge) => {
           const percent = Math.min(100, Math.round((badge.current / badge.total) * 100));
           return (
             <div
               key={badge.id}
-              className="flex flex-col gap-3 rounded-3xl border border-border bg-card p-5 shadow-sm"
+              className="flex flex-col gap-2.5 rounded-2xl border border-border bg-card p-4 shadow-sm"
             >
               <div className="flex items-center gap-3">
                 <div

@@ -42,6 +42,7 @@
   --color-entity-shared: var(--entity-shared);
   --color-entity-partner-a: var(--entity-partner-a);
   --color-entity-partner-b: var(--entity-partner-b);
+  --color-primary-strong: var(--primary-strong);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -63,7 +64,7 @@
   --secondary: #F4F4F5;
   --secondary-foreground: #18181B;
   --muted: #F4F4F5;
-  --muted-foreground: #71717A;
+  --muted-foreground: #5C5C63;
   --accent: #F4F4F5;
   --accent-foreground: #18181B;
   --destructive: #DC2626;
@@ -85,9 +86,10 @@
   --sidebar-accent-foreground: #18181B;
   --sidebar-border: #E4E4E7;
   --sidebar-ring: #FF5A3C;
-  --entity-shared: #E11D48;
-  --entity-partner-a: #0284C7;
+  --entity-shared: #BE123C;
+  --entity-partner-a: #0369A1;
   --entity-partner-b: #7C3AED;
+  --primary-strong: #BF432D;
 }
 
 .dark {
@@ -126,6 +128,7 @@
   --entity-shared: #FB7185;
   --entity-partner-a: #38BDF8;
   --entity-partner-b: #A78BFA;
+  --primary-strong: #FF5A3C;
 }
 
 @layer base {

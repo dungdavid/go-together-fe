@@ -113,11 +113,11 @@ export default function HomePage() {
           <div className="relative z-10 flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-baseline gap-3">
-                <span className="font-heading text-4xl italic tracking-tight">
+                <span className="font-sans text-4xl font-semibold tabular-nums tracking-tight">
                   {journeyStats.provincesVisited}
-                  <span className="text-xl not-italic text-muted-foreground">/{journeyStats.provincesTotal}</span>
+                  <span className="text-xl font-medium text-muted-foreground">/{journeyStats.provincesTotal}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary">
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-primary-strong">
                   <TrendingUp className="size-3.5" />+{journeyStats.newThisYear} trong 2026
                 </span>
               </div>
@@ -142,6 +142,7 @@ export default function HomePage() {
             <div className="flex w-full items-center gap-3 sm:w-auto">
               <button
                 type="button"
+                aria-label="Phát hoạt ảnh hành trình lũy kế"
                 className="flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground/10 text-foreground transition-colors hover:bg-foreground/20"
               >
                 <Play className="size-4" />
@@ -193,7 +194,7 @@ export default function HomePage() {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-heading text-3xl italic tracking-tight">{coveragePercent}%</span>
+              <span className="font-sans text-3xl font-semibold tabular-nums tracking-tight">{coveragePercent}%</span>
               <span className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
                 {journeyStats.provincesVisited}/{journeyStats.provincesTotal} Tỉnh
               </span>
@@ -299,13 +300,18 @@ export default function HomePage() {
         <div className={`${tileBase} col-span-12 sm:col-span-6 lg:col-span-4 flex min-h-[220px] flex-col justify-between`}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ẩm thực đã thử</span>
-            <UtensilsCrossed className="size-[18px] text-amber-500" />
+            <UtensilsCrossed className="size-[18px] text-muted-foreground" />
           </div>
           <div className="my-1 flex items-baseline gap-2">
-            <span className="font-heading text-4xl">{foodStats.totalDishes}</span>
+            <span className="font-sans text-2xl font-semibold tabular-nums">{foodStats.totalDishes}</span>
             <span className="text-sm text-muted-foreground">món ngon bản địa đặc trưng</span>
           </div>
-          <div className="flex items-center gap-3 overflow-x-auto py-1">
+          <div
+            className="flex items-center gap-3 overflow-x-auto py-1"
+            tabIndex={0}
+            role="region"
+            aria-label="Danh sách món ăn đã thử, cuộn ngang"
+          >
             {foodHighlights.map((food) => (
               <div key={food.id} className="flex shrink-0 flex-col items-center gap-1.5">
                 <div className="size-12 overflow-hidden rounded-full border border-border">
@@ -355,11 +361,11 @@ export default function HomePage() {
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Thời tiết điểm hẹn tới</span>
               <span className="mt-0.5 text-sm font-medium">{weatherForecast.destination}</span>
             </div>
-            <CloudSun className="size-5 text-amber-500" />
+            <CloudSun className="size-5 text-muted-foreground" />
           </div>
           <div className="my-2 flex items-baseline justify-between">
             <div>
-              <span className="font-heading text-4xl font-light">
+              <span className="font-sans text-2xl font-semibold tabular-nums">
                 {weatherForecast.tempC}°<span className="text-xl font-normal text-muted-foreground">C</span>
               </span>
               <span className="block text-sm text-muted-foreground">{weatherForecast.condition}</span>
@@ -411,7 +417,7 @@ export default function HomePage() {
                           {place.coverPhotoUrl ? (
                             <Image src={place.coverPhotoUrl} alt={place.name} width={40} height={40} className="size-full object-cover" />
                           ) : (
-                            <ImageOff className="size-4 text-muted-foreground/40" />
+                            <ImageOff className="size-4 text-muted-foreground" />
                           )}
                         </div>
                         <div className="flex min-w-0 flex-col">

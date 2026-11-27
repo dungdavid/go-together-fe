@@ -117,7 +117,7 @@ export function RegisterForm({ isModal }: { isModal: boolean }) {
         </div>
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-primary">Bắt đầu hành trình</span>
-          <h2 className="mt-0.5 font-heading text-3xl font-bold tracking-tight">Tạo nhật ký mới</h2>
+          <h1 className="mt-0.5 font-heading text-3xl font-bold tracking-tight">Tạo nhật ký mới</h1>
           <p className="mt-1 text-sm text-muted-foreground">Chỉ mất 10 giây để lưu giữ mọi khoảnh khắc.</p>
         </div>
       </div>
@@ -208,7 +208,12 @@ export function RegisterForm({ isModal }: { isModal: boolean }) {
             ))}
           </div>
           <div className="flex items-center justify-between px-0.5 text-xs">
-            <span className={cn("font-medium", passwordTooShort ? "text-destructive" : "text-primary")}>
+            <span
+              className={cn(
+                "font-medium",
+                passwordTooShort ? "text-destructive" : password.length === 0 ? "text-muted-foreground" : "text-primary",
+              )}
+            >
               {passwordTooShort ? "Mật khẩu cần ít nhất 8 ký tự" : strength.label}
             </span>
             <span className="text-muted-foreground">Tối thiểu 8 ký tự</span>

@@ -52,10 +52,10 @@ export function StepDestination({
 
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium">Vùng miền</label>
-        <div className="flex items-center justify-between rounded-xl bg-muted/60 px-3.5 py-2.5">
+        <div className="flex items-center justify-between rounded-xl border border-dashed border-border px-3.5 py-2.5">
           <div className="flex items-center gap-2">
             <Sparkles className="size-[18px] text-primary" />
-            <span className="text-sm font-medium">
+            <span className="text-sm font-medium text-muted-foreground">
               {draft.province ? `${regionLabelFor(draft.province)}${subRegion ? ` · ${subRegion}` : ""}` : "Chọn tỉnh thành trước"}
             </span>
           </div>
@@ -87,6 +87,7 @@ export function StepDestination({
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Khởi hành</span>
               <input
                 type="date"
+                lang="vi"
                 value={draft.startDate}
                 onChange={(e) => onChange({ startDate: e.target.value })}
                 className="w-full bg-transparent text-sm font-medium outline-none"
@@ -99,6 +100,7 @@ export function StepDestination({
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Kết thúc</span>
               <input
                 type="date"
+                lang="vi"
                 value={draft.endDate}
                 onChange={(e) => onChange({ endDate: e.target.value })}
                 className="w-full bg-transparent text-sm font-medium outline-none"

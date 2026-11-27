@@ -137,9 +137,9 @@ function StatTile({
   return (
     <div className="flex flex-col items-center gap-2 rounded-2xl bg-secondary/60 p-5 text-center transition-colors hover:bg-secondary">
       <span className="text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
-      <div className="font-heading text-3xl">
+      <div className="font-sans text-3xl font-semibold tabular-nums">
         {value}
-        <span className="text-sm font-sans text-muted-foreground">{suffix}</span>
+        <span className="text-sm font-normal text-muted-foreground">{suffix}</span>
       </div>
       <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
         <Icon className="size-3" />
