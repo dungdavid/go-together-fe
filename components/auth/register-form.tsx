@@ -133,7 +133,7 @@ export function RegisterForm({ isModal }: { isModal: boolean }) {
               id="display-name"
               type="text"
               required
-              placeholder="vd: Ngọc Sơn & Huyền Thương"
+              placeholder="vd: Đình Dũng"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               className="h-12 w-full rounded-xl bg-muted pl-11 pr-4 text-sm outline-none transition-all focus:shadow-[0_0_14px_rgba(255,90,60,0.25)]"
@@ -152,7 +152,7 @@ export function RegisterForm({ isModal }: { isModal: boolean }) {
               id="username"
               type="text"
               required
-              placeholder="ngocson"
+              placeholder="dinhdung"
               value={username}
               onChange={(e) => setUsername(e.target.value.trim().toLowerCase())}
               className="h-12 w-full rounded-xl bg-muted pl-11 pr-32 text-sm outline-none transition-all focus:shadow-[0_0_14px_rgba(255,90,60,0.25)]"

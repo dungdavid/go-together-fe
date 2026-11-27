@@ -98,8 +98,8 @@ export const LandscapePassCard = forwardRef<
             </div>
             <div className="flex items-center gap-2.5">
               <LegendDot color="#FB7185" label={`Chung ${data.shared}`} />
-              <LegendDot color="#38BDF8" label={`Sơn ${data.partnerA}`} />
-              <LegendDot color="#A78BFA" label={`Thương ${data.partnerB}`} />
+              <LegendDot color="#38BDF8" label={`Đình Dũng ${data.partnerA}`} />
+              <LegendDot color="#A78BFA" label={`Đình Dũng ${data.partnerB}`} />
             </div>
           </div>
         )}
