@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Perspective, Place } from "@/lib/types";
 import { JourneyDraft } from "@/components/add-journey/journey-draft";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -38,6 +39,13 @@ interface CreatedJourneyResult {
 }
 
 async function submitJourney(draft: JourneyDraft): Promise<CreatedJourneyResult> {
+  const uploadedPhotos = await Promise.all(
+    draft.photos.map(async (photo) => ({
+      url: await uploadImageToCloudinary(photo.file),
+      isCover: photo.isCover,
+    })),
+  );
+
   const place = await fetchJson<Place>("/places", {
     method: "POST",
     body: JSON.stringify({
@@ -48,7 +56,7 @@ async function submitJourney(draft: JourneyDraft): Promise<CreatedJourneyResult>
       visitedAt: draft.startDate || undefined,
       perspective: draft.perspective satisfies Perspective,
       notes: draft.story || undefined,
-      coverPhotoUrl: draft.photos.find((p) => p.isCover)?.url ?? draft.photos[0]?.url,
+      coverPhotoUrl: uploadedPhotos.find((p) => p.isCover)?.url ?? uploadedPhotos[0]?.url,
     }),
   });
 
@@ -81,7 +89,7 @@ async function submitJourney(draft: JourneyDraft): Promise<CreatedJourneyResult>
     }
   }
 
-  for (const photo of draft.photos) {
+  for (const photo of uploadedPhotos) {
     await fetchJson(`/places/${place.id}/photos`, {
       method: "POST",
       body: JSON.stringify({ url: photo.url }),

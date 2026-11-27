@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { ImagePlus, Lock, Globe, Star, X } from "lucide-react";
 import { DraftPatch, DraftPhoto, JourneyDraft, makeId } from "@/components/add-journey/journey-draft";
@@ -16,21 +16,32 @@ export function StepMemories({
   draft: JourneyDraft;
   onChange: (patch: DraftPatch) => void;
 }) {
-  const [urlInput, setUrlInput] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function setPhotos(updater: (prev: DraftPhoto[]) => DraftPhoto[]) {
     onChange((prev) => ({ photos: updater(prev.photos) }));
   }
 
-  function addPhoto() {
-    const url = urlInput.trim();
-    if (!url || draft.photos.length >= MAX_PHOTOS) return;
-    setPhotos((prev) => [...prev, { id: makeId("photo"), url, isCover: prev.length === 0 }]);
-    setUrlInput("");
+  function addFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    const imageFiles = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    setPhotos((prev) => {
+      const remainingSlots = MAX_PHOTOS - prev.length;
+      const toAdd = imageFiles.slice(0, Math.max(0, remainingSlots));
+      const newPhotos: DraftPhoto[] = toAdd.map((file, index) => ({
+        id: makeId("photo"),
+        file,
+        previewUrl: URL.createObjectURL(file),
+        isCover: prev.length === 0 && index === 0,
+      }));
+      return [...prev, ...newPhotos];
+    });
   }
 
   function removePhoto(id: string) {
     setPhotos((prev) => {
+      const target = prev.find((p) => p.id === id);
+      if (target) URL.revokeObjectURL(target.previewUrl);
       const next = prev.filter((p) => p.id !== id);
       if (next.length > 0 && !next.some((p) => p.isCover)) next[0].isCover = true;
       return next;
@@ -51,36 +62,39 @@ export function StepMemories({
           </span>
         </div>
 
-        <div className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted/30 p-4">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+          onChange={(e) => {
+            addFiles(e.target.files);
+            e.target.value = "";
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={draft.photos.length >= MAX_PHOTOS}
+          className="flex w-full items-center gap-3 rounded-2xl border-2 border-dashed border-border bg-muted/30 p-4 text-left transition-colors hover:border-primary/50 hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-60"
+        >
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <ImagePlus className="size-5" />
           </div>
-          <input
-            value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addPhoto();
-              }
-            }}
-            placeholder="Dán link ảnh (Google Photos, Imgur, bất kỳ URL ảnh nào) rồi nhấn Enter"
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-          />
-          <button
-            type="button"
-            onClick={addPhoto}
-            className="shrink-0 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
-          >
-            Thêm
-          </button>
-        </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">Chọn ảnh từ thiết bị</span>
+            <span className="text-xs text-muted-foreground">
+              Có thể chọn nhiều ảnh cùng lúc — ảnh sẽ được tải lên khi bạn lưu chuyến đi
+            </span>
+          </div>
+        </button>
 
         {draft.photos.length > 0 && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {draft.photos.map((photo) => (
               <div key={photo.id} className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted">
-                <Image src={photo.url} alt="" fill unoptimized className="object-cover" />
+                <Image src={photo.previewUrl} alt="" fill unoptimized className="object-cover" />
                 {photo.isCover ? (
                   <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-black">
                     <Star className="size-3" fill="currentColor" />

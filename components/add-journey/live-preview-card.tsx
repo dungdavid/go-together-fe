@@ -15,7 +15,7 @@ export function LivePreviewCard({ draft, step }: { draft: JourneyDraft; step: 1 
     <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
       <div className="relative h-36 w-full bg-muted sm:h-48">
         {cover ? (
-          <Image src={cover.url} alt={draft.placeName || "Ảnh bìa"} fill className="object-cover" unoptimized />
+          <Image src={cover.previewUrl} alt={draft.placeName || "Ảnh bìa"} fill className="object-cover" unoptimized />
         ) : (
           <div className="flex size-full items-center justify-center bg-gradient-to-br from-muted to-secondary">
             <MapPin className="size-8 text-muted-foreground/40" />
@@ -91,7 +91,7 @@ export function LivePreviewCard({ draft, step }: { draft: JourneyDraft; step: 1 
           <div className="grid grid-cols-3 gap-1.5">
             {draft.photos.slice(0, 3).map((photo, i) => (
               <div key={photo.id} className="relative aspect-video overflow-hidden rounded-lg border border-border bg-muted">
-                <Image src={photo.url} alt="" fill className="object-cover" unoptimized />
+                <Image src={photo.previewUrl} alt="" fill className="object-cover" unoptimized />
                 {i === 2 && draft.photos.length > 3 && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-[10px] font-bold text-white">
                     +{draft.photos.length - 3}
