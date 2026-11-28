@@ -44,22 +44,6 @@ export interface Badge {
   earned: boolean;
 }
 
-export interface DayForecast {
-  label: string;
-  condition: "rainy" | "partly-cloudy" | "sunny" | "cloudy";
-  tempC: number;
-  isHighlighted?: boolean;
-}
-
-export interface WeatherForecast {
-  destination: string;
-  region: string;
-  tripMonthLabel: string;
-  tempC: number;
-  condition: string;
-  days: DayForecast[];
-}
-
 export interface PassportInfo {
   code: string;
   provincesCount: number;
@@ -108,21 +92,6 @@ export const nextBadge: NextBadge = {
   current: 18,
   total: 20,
   hint: "Chỉ còn 2 tỉnh nữa để mở khoá danh hiệu Vạn Dặm!",
-};
-
-export const weatherForecast: WeatherForecast = {
-  destination: "Huế — Cố Đô Hương Giang",
-  region: "Chuyến 11/2026",
-  tripMonthLabel: "Chuyến 11/2026",
-  tempC: 25,
-  condition: "Nhiều mây, se lạnh đầu thu",
-  days: [
-    { label: "T2", condition: "rainy", tempC: 24 },
-    { label: "T3", condition: "partly-cloudy", tempC: 25 },
-    { label: "T4", condition: "sunny", tempC: 26, isHighlighted: true },
-    { label: "T5", condition: "cloudy", tempC: 25 },
-    { label: "T6", condition: "rainy", tempC: 23 },
-  ],
 };
 
 export const passportInfo: PassportInfo = {

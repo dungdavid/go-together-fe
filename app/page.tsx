@@ -12,6 +12,7 @@ import {
   Compass,
   Heart,
   ImageOff,
+  Loader2,
   MapPin,
   MessageCircle,
   PartyPopper,
@@ -28,8 +29,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import JourneyMap from "@/components/dashboard/journey-map-loader";
 import { PerspectiveChip } from "@/components/dashboard/perspective-chip";
 import { BoardingPassModal } from "@/components/boarding-pass/boarding-pass-modal";
+import { LandingPage } from "@/components/landing/landing-page";
 import { useAuth } from "@/lib/auth-context";
 import { usePlace, usePlaces } from "@/lib/api";
+import { useLiveWeather, type WeatherCondition } from "@/lib/use-live-weather";
 import type { Perspective } from "@/lib/types";
 import { checklistProgress, formatVisitedDate } from "@/lib/format";
 import {
@@ -41,14 +44,12 @@ import {
   passportInfo,
   regionProgress,
   totalPhotosArchived,
-  weatherForecast,
-  type DayForecast,
 } from "@/lib/dashboard-data";
 
 const tileBase =
   "rounded-3xl p-6 bg-card border border-border relative overflow-hidden shadow-sm";
 
-const weatherIcons: Record<DayForecast["condition"], typeof Sun> = {
+const weatherIcons: Record<WeatherCondition, typeof Sun> = {
   sunny: Sun,
   "partly-cloudy": CloudSun,
   cloudy: Cloud,
@@ -60,7 +61,8 @@ const ALL_PERSPECTIVES: Perspective[] = ["shared", "partnerA", "partnerB"];
 export default function HomePage() {
   const { data: places, isLoading } = usePlaces();
   const { data: latestTrip } = usePlace("ta-xua");
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { status: weatherStatus, weather: liveWeather, retry: retryWeather } = useLiveWeather(isAuthenticated);
   const [isBoardingPassOpen, setIsBoardingPassOpen] = useState(false);
   const [mapFilters, setMapFilters] = useState<Set<Perspective>>(new Set(ALL_PERSPECTIVES));
 
@@ -87,6 +89,9 @@ export default function HomePage() {
   const partnerBLen = (coverageSplit.partnerB / journeyStats.provincesTotal) * circumference;
 
   const tripProgress = latestTrip ? checklistProgress(latestTrip) : null;
+
+  if (authLoading) return null;
+  if (!isAuthenticated) return <LandingPage />;
 
   return (
     <div className="pb-24 md:pb-10">
@@ -277,55 +282,57 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 4. LATEST TRIP TILE */}
-        <div className="relative col-span-12 flex min-h-[380px] flex-col justify-between overflow-hidden rounded-3xl p-6 shadow-md lg:col-span-4 lg:row-span-2">
-          {latestTrip ? (
-            <>
-              {latestTrip.coverPhotoUrl && (
-                <Image
-                  src={latestTrip.coverPhotoUrl}
-                  alt={latestTrip.name}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 33vw"
-                  className="-z-20 object-cover"
-                />
-              )}
-              <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/60 to-black/20" />
+        {/* 4. LATEST TRIP TILE (chỉ hiển thị khi đã đăng nhập) */}
+        {isAuthenticated && (
+          <div className="relative col-span-12 flex min-h-[380px] flex-col justify-between overflow-hidden rounded-3xl p-6 shadow-md lg:col-span-4 lg:row-span-2">
+            {latestTrip ? (
+              <>
+                {latestTrip.coverPhotoUrl && (
+                  <Image
+                    src={latestTrip.coverPhotoUrl}
+                    alt={latestTrip.name}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 33vw"
+                    className="-z-20 object-cover"
+                  />
+                )}
+                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/60 to-black/20" />
 
-              <div className="relative z-10 flex items-center justify-between">
-                <PerspectiveChip perspective={latestTrip.perspective} className="bg-white/15 text-white" />
-                <span className="rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[11px] uppercase tracking-wider text-white/90">
-                  Tháng 10/2026
-                </span>
-              </div>
-
-              <div className="relative z-10 flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-white/80">
-                  <MapPin className="size-3.5" />
-                  {latestTrip.region}
+                <div className="relative z-10 flex items-center justify-between">
+                  <PerspectiveChip perspective={latestTrip.perspective} className="bg-white/15 text-white" />
+                  <span className="rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[11px] uppercase tracking-wider text-white/90">
+                    Tháng 10/2026
+                  </span>
                 </div>
-                <h2 className="font-heading text-2xl font-medium text-white drop-shadow-md">{latestTrip.name}</h2>
-                <p className="line-clamp-2 text-sm text-white/80">{latestTrip.notes}</p>
-                <div className="flex items-center justify-between border-t border-white/15 pt-3">
-                  <div className="flex items-center gap-3 text-xs text-white/90">
-                    <span className="flex items-center gap-1"><Heart className="size-3.5 fill-rose-400 text-rose-400" /> 31</span>
-                    <span className="flex items-center gap-1"><Star className="size-3.5 fill-amber-400 text-amber-400" /> {tripProgress?.done ?? 6}</span>
-                    <span className="flex items-center gap-1"><MessageCircle className="size-3.5 text-sky-400" /> 11</span>
+
+                <div className="relative z-10 flex flex-col gap-3">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-white/80">
+                    <MapPin className="size-3.5" />
+                    {latestTrip.region}
                   </div>
-                  <Link
-                    href={`/places/${latestTrip.id}`}
-                    className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-xs text-white backdrop-blur-md transition-colors hover:bg-white/25"
-                  >
-                    Chi tiết chặng <ArrowRight className="size-3.5" />
-                  </Link>
+                  <h2 className="font-heading text-2xl font-medium text-white drop-shadow-md">{latestTrip.name}</h2>
+                  <p className="line-clamp-2 text-sm text-white/80">{latestTrip.notes}</p>
+                  <div className="flex items-center justify-between border-t border-white/15 pt-3">
+                    <div className="flex items-center gap-3 text-xs text-white/90">
+                      <span className="flex items-center gap-1"><Heart className="size-3.5 fill-rose-400 text-rose-400" /> 31</span>
+                      <span className="flex items-center gap-1"><Star className="size-3.5 fill-amber-400 text-amber-400" /> {tripProgress?.done ?? 6}</span>
+                      <span className="flex items-center gap-1"><MessageCircle className="size-3.5 text-sky-400" /> 11</span>
+                    </div>
+                    <Link
+                      href={`/places/${latestTrip.id}`}
+                      className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-xs text-white backdrop-blur-md transition-colors hover:bg-white/25"
+                    >
+                      Chi tiết chặng <ArrowRight className="size-3.5" />
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </>
-          ) : (
-            <Skeleton className="absolute inset-0" />
-          )}
-        </div>
+              </>
+            ) : (
+              <Skeleton className="absolute inset-0" />
+            )}
+          </div>
+        )}
 
         {/* 5. FOOD TILE */}
         <div className={`${tileBase} col-span-12 sm:col-span-6 lg:col-span-4 flex min-h-[220px] flex-col justify-between`}>
@@ -358,159 +365,196 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 6. NEXT BADGE TILE */}
-        <div className={`${tileBase} col-span-12 sm:col-span-6 lg:col-span-4 flex min-h-[220px] flex-col justify-between`}>
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Huy hiệu tiếp theo</span>
-            <Award className="size-[18px] text-primary" />
-          </div>
-          <div className="my-auto flex items-center gap-4">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary">
-              <Award className="size-7 text-primary-foreground" />
-            </div>
-            <div className="flex w-full flex-col gap-1">
-              <span className="text-base font-semibold leading-tight">{nextBadge.name}</span>
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Tiến độ</span>
-                <span className="font-bold text-primary">{nextBadge.current}/{nextBadge.total} ({Math.round((nextBadge.current / nextBadge.total) * 100)}%)</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-primary" style={{ width: `${(nextBadge.current / nextBadge.total) * 100}%` }} />
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 rounded-xl bg-secondary p-2 text-xs text-muted-foreground">
-            <PartyPopper className="size-4 text-amber-500" />
-            {nextBadge.hint}
-          </div>
-        </div>
-
-        {/* 7. WEATHER TILE */}
-        <div className={`${tileBase} col-span-12 sm:col-span-6 lg:col-span-4 flex min-h-[220px] flex-col justify-between`}>
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Thời tiết điểm hẹn tới</span>
-              <span className="mt-0.5 text-sm font-medium">{weatherForecast.destination}</span>
-            </div>
-            <CloudSun className="size-5 text-muted-foreground" />
-          </div>
-          <div className="my-2 flex items-baseline justify-between">
-            <div>
-              <span className="font-sans text-2xl font-semibold tabular-nums">
-                {weatherForecast.tempC}°<span className="text-xl font-normal text-muted-foreground">C</span>
-              </span>
-              <span className="block text-sm text-muted-foreground">{weatherForecast.condition}</span>
-            </div>
-            <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-primary">{weatherForecast.tripMonthLabel}</span>
-          </div>
-          <div className="grid grid-cols-5 gap-1.5 border-t border-border pt-2 text-center">
-            {weatherForecast.days.map((day) => {
-              const Icon = weatherIcons[day.condition];
-              return (
-                <div
-                  key={day.label}
-                  className={`flex flex-col items-center gap-1 rounded-lg p-1 ${day.isHighlighted ? "bg-secondary ring-1 ring-primary/30" : "bg-secondary/50"}`}
-                >
-                  <span className={`text-[10px] ${day.isHighlighted ? "font-semibold text-primary" : "text-muted-foreground"}`}>{day.label}</span>
-                  <Icon className="size-[15px] text-amber-500" />
-                  <span className={`text-[11px] ${day.isHighlighted ? "font-bold" : ""}`}>{day.tempC}°</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 8. RECENT PLACES TILE */}
-        <div className={`${tileBase} col-span-12 lg:col-span-8 flex min-h-[300px] flex-col justify-between`}>
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Địa điểm gần đây</span>
-              <span className="size-1.5 rounded-full bg-primary" />
-            </div>
-            <Link href="/places" className="flex items-center gap-1 text-sm font-medium text-primary hover:text-foreground">
-              Xem tất cả {journeyStats.destinationsCount} trạm dừng <ArrowRight className="size-[15px]" />
-            </Link>
-          </div>
-
-          <div className="my-1 flex flex-col divide-y divide-border">
-            {isLoading
-              ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="my-1 h-14 w-full" />)
-              : recentPlaces.map((place) => {
-                  const progress = checklistProgress(place);
-                  return (
-                    <Link
-                      key={place.id}
-                      href={`/places/${place.id}`}
-                      className="flex items-center justify-between gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-secondary/70"
-                    >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted">
-                          {place.coverPhotoUrl ? (
-                            <Image src={place.coverPhotoUrl} alt={place.name} width={40} height={40} className="size-full object-cover" />
-                          ) : (
-                            <ImageOff className="size-4 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div className="flex min-w-0 flex-col">
-                          <span className="truncate text-sm font-medium">{place.name}</span>
-                          <span className="text-xs text-muted-foreground">{place.region}</span>
-                        </div>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-3">
-                        <PerspectiveChip perspective={place.perspective} className="hidden sm:inline-flex" />
-                        <span className="text-xs text-muted-foreground">{progress.done}/{progress.total} điểm</span>
-                        <span className="text-xs text-muted-foreground/70">{formatVisitedDate(place.visitedAt)}</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-          </div>
-
-          <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
-            <span>Tổng cộng {journeyStats.experiencesCount} câu chuyện và {totalPhotosArchived.toLocaleString("vi-VN")} bức ảnh đã ghi lại</span>
-            <span>Đồng bộ đám mây</span>
-          </div>
-        </div>
-
-        {/* 9. PASSPORT TILE */}
-        <div className={`${tileBase} col-span-12 lg:col-span-4 flex min-h-[300px] flex-col justify-between`}>
-          <div className="relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-muted/50 p-4">
+        {/* 6. NEXT BADGE TILE (chỉ hiển thị khi đã đăng nhập) */}
+        {isAuthenticated && (
+          <div className={`${tileBase} col-span-12 sm:col-span-6 lg:col-span-4 flex min-h-[220px] flex-col justify-between`}>
             <div className="flex items-center justify-between">
-              <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">Travel Passport // Expedition VN</span>
-              <PlaneTakeoff className="size-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Huy hiệu tiếp theo</span>
+              <Award className="size-[18px] text-primary" />
             </div>
-            <div className="flex items-baseline justify-between">
-              <div>
-                <span className="block text-base font-semibold">VN · {journeyStats.provincesVisited} PROVINCES</span>
-                <span className="text-[10px] text-muted-foreground">{passportInfo.passengerLabel}</span>
+            <div className="my-auto flex items-center gap-4">
+              <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary">
+                <Award className="size-7 text-primary-foreground" />
               </div>
-              <div className="flex size-12 shrink-0 -rotate-12 items-center justify-center rounded-full border border-dashed border-destructive/60 bg-destructive/10 p-1 text-center text-[8px] font-bold leading-none text-destructive">
-                {passportInfo.sealLabel}
+              <div className="flex w-full flex-col gap-1">
+                <span className="text-base font-semibold leading-tight">{nextBadge.name}</span>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Tiến độ</span>
+                  <span className="font-bold text-primary">{nextBadge.current}/{nextBadge.total} ({Math.round((nextBadge.current / nextBadge.total) * 100)}%)</span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${(nextBadge.current / nextBadge.total) * 100}%` }} />
+                </div>
               </div>
             </div>
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-[2px] opacity-70">
-                {[2, 1, 3, 1, 4, 2, 1, 3, 1, 2, 1, 3, 2].map((w, i) => (
-                  <span key={i} className="h-6 bg-foreground" style={{ width: `${w}px` }} />
-                ))}
-              </div>
-              <span className="font-mono text-[9px] text-muted-foreground">{passportInfo.code}</span>
+            <div className="flex items-center gap-2 rounded-xl bg-secondary p-2 text-xs text-muted-foreground">
+              <PartyPopper className="size-4 text-amber-500" />
+              {nextBadge.hint}
             </div>
           </div>
-          <div className="mt-4 flex flex-col gap-2">
-            <p className="text-xs text-muted-foreground">
-              Tạo tấm thẻ Boarding Pass kỷ niệm để chia sẻ trực tiếp lên Instagram Story hoặc in album ảnh cặp đôi.
-            </p>
-            <button
-              type="button"
-              onClick={() => setIsBoardingPassOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110 active:scale-[0.99]"
-            >
-              <Ticket className="size-[18px]" />
-              Xuất Boarding Pass &amp; Story
-            </button>
+        )}
+
+        {/* 7. WEATHER TILE (chỉ hiển thị khi đã đăng nhập) */}
+        {isAuthenticated && (
+          <div className={`${tileBase} col-span-12 sm:col-span-6 lg:col-span-4 flex min-h-[220px] flex-col justify-between`}>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Thời tiết tại vị trí của bạn</span>
+                <span className="mt-0.5 text-sm font-medium">
+                  {liveWeather?.locationLabel ?? (weatherStatus === "denied" || weatherStatus === "error" ? "Chưa xác định được vị trí" : "Đang xác định vị trí…")}
+                </span>
+              </div>
+              <CloudSun className="size-5 text-muted-foreground" />
+            </div>
+
+            {(weatherStatus === "locating" || weatherStatus === "loading") && (
+              <div className="flex flex-1 items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" />
+                {weatherStatus === "locating" ? "Đang lấy vị trí của bạn…" : "Đang tải thời tiết…"}
+              </div>
+            )}
+
+            {(weatherStatus === "denied" || weatherStatus === "error") && (
+              <div className="flex flex-1 flex-col items-center justify-center gap-2 py-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  {weatherStatus === "denied"
+                    ? "Cho phép truy cập vị trí để xem thời tiết nơi bạn đang ở"
+                    : "Không lấy được dữ liệu thời tiết lúc này"}
+                </p>
+                <button
+                  type="button"
+                  onClick={retryWeather}
+                  className="rounded-full bg-secondary px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary/70"
+                >
+                  Thử lại
+                </button>
+              </div>
+            )}
+
+            {weatherStatus === "ready" && liveWeather && (
+              <>
+                <div className="my-2 flex items-baseline justify-between">
+                  <div>
+                    <span className="font-sans text-2xl font-semibold tabular-nums">
+                      {liveWeather.tempC}°<span className="text-xl font-normal text-muted-foreground">C</span>
+                    </span>
+                    <span className="block text-sm text-muted-foreground">{liveWeather.conditionLabel}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-5 gap-1.5 border-t border-border pt-2 text-center">
+                  {liveWeather.days.map((day) => {
+                    const Icon = weatherIcons[day.condition];
+                    return (
+                      <div
+                        key={day.label}
+                        className={`flex flex-col items-center gap-1 rounded-lg p-1 ${day.isHighlighted ? "bg-secondary ring-1 ring-primary/30" : "bg-secondary/50"}`}
+                      >
+                        <span className={`text-[10px] ${day.isHighlighted ? "font-semibold text-primary" : "text-muted-foreground"}`}>{day.label}</span>
+                        <Icon className="size-[15px] text-amber-500" />
+                        <span className={`text-[11px] ${day.isHighlighted ? "font-bold" : ""}`}>{day.tempC}°</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
-        </div>
+        )}
+
+        {/* 8. RECENT PLACES TILE + 9. PASSPORT TILE (chỉ hiển thị khi đã đăng nhập) */}
+        {isAuthenticated && (
+          <>
+            <div className={`${tileBase} col-span-12 lg:col-span-8 flex min-h-[300px] flex-col justify-between`}>
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Địa điểm gần đây</span>
+                  <span className="size-1.5 rounded-full bg-primary" />
+                </div>
+                <Link href="/places" className="flex items-center gap-1 text-sm font-medium text-primary hover:text-foreground">
+                  Xem tất cả {journeyStats.destinationsCount} trạm dừng <ArrowRight className="size-[15px]" />
+                </Link>
+              </div>
+
+              <div className="my-1 flex flex-col divide-y divide-border">
+                {isLoading
+                  ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="my-1 h-14 w-full" />)
+                  : recentPlaces.map((place) => {
+                      const progress = checklistProgress(place);
+                      return (
+                        <Link
+                          key={place.id}
+                          href={`/places/${place.id}`}
+                          className="flex items-center justify-between gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-secondary/70"
+                        >
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted">
+                              {place.coverPhotoUrl ? (
+                                <Image src={place.coverPhotoUrl} alt={place.name} width={40} height={40} className="size-full object-cover" />
+                              ) : (
+                                <ImageOff className="size-4 text-muted-foreground" />
+                              )}
+                            </div>
+                            <div className="flex min-w-0 flex-col">
+                              <span className="truncate text-sm font-medium">{place.name}</span>
+                              <span className="text-xs text-muted-foreground">{place.region}</span>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 items-center gap-3">
+                            <PerspectiveChip perspective={place.perspective} className="hidden sm:inline-flex" />
+                            <span className="text-xs text-muted-foreground">{progress.done}/{progress.total} điểm</span>
+                            <span className="text-xs text-muted-foreground/70">{formatVisitedDate(place.visitedAt)}</span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+              </div>
+
+              <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+                <span>Tổng cộng {journeyStats.experiencesCount} câu chuyện và {totalPhotosArchived.toLocaleString("vi-VN")} bức ảnh đã ghi lại</span>
+                <span>Đồng bộ đám mây</span>
+              </div>
+            </div>
+
+            <div className={`${tileBase} col-span-12 lg:col-span-4 flex min-h-[300px] flex-col justify-between`}>
+              <div className="relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-muted/50 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground">Travel Passport // Expedition VN</span>
+                  <PlaneTakeoff className="size-4 text-primary" />
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <span className="block text-base font-semibold">VN · {journeyStats.provincesVisited} PROVINCES</span>
+                    <span className="text-[10px] text-muted-foreground">{passportInfo.passengerLabel}</span>
+                  </div>
+                  <div className="flex size-12 shrink-0 -rotate-12 items-center justify-center rounded-full border border-dashed border-destructive/60 bg-destructive/10 p-1 text-center text-[8px] font-bold leading-none text-destructive">
+                    {passportInfo.sealLabel}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-[2px] opacity-70">
+                    {[2, 1, 3, 1, 4, 2, 1, 3, 1, 2, 1, 3, 2].map((w, i) => (
+                      <span key={i} className="h-6 bg-foreground" style={{ width: `${w}px` }} />
+                    ))}
+                  </div>
+                  <span className="font-mono text-[9px] text-muted-foreground">{passportInfo.code}</span>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-col gap-2">
+                <p className="text-xs text-muted-foreground">
+                  Tạo tấm thẻ Boarding Pass kỷ niệm để chia sẻ trực tiếp lên Instagram Story hoặc in album ảnh cặp đôi.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsBoardingPassOpen(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110 active:scale-[0.99]"
+                >
+                  <Ticket className="size-[18px]" />
+                  Xuất Boarding Pass &amp; Story
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </section>
 
       <footer className="flex flex-col items-center justify-between gap-2 border-t border-border px-4 py-6 text-xs text-muted-foreground sm:flex-row md:px-8">
