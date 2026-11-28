@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   Award,
+  Check,
   Cloud,
   CloudRain,
   CloudSun,
@@ -32,6 +33,7 @@ import { LandingPage } from "@/components/landing/landing-page";
 import { useAuth } from "@/lib/auth-context";
 import { usePlace, usePlaces } from "@/lib/api";
 import { useLiveWeather, type WeatherCondition } from "@/lib/use-live-weather";
+import type { Perspective } from "@/lib/types";
 import { checklistProgress, formatVisitedDate } from "@/lib/format";
 import {
   coverageSplit,
@@ -54,16 +56,30 @@ const weatherIcons: Record<WeatherCondition, typeof Sun> = {
   rainy: CloudRain,
 };
 
+const ALL_PERSPECTIVES: Perspective[] = ["shared", "partnerA", "partnerB"];
+
 export default function HomePage() {
   const { data: places, isLoading } = usePlaces();
   const { data: latestTrip } = usePlace("ta-xua");
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { status: weatherStatus, weather: liveWeather, retry: retryWeather } = useLiveWeather(isAuthenticated);
   const [isBoardingPassOpen, setIsBoardingPassOpen] = useState(false);
+  const [mapFilters, setMapFilters] = useState<Set<Perspective>>(new Set(ALL_PERSPECTIVES));
+
+  function toggleMapFilter(perspective: Perspective) {
+    setMapFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(perspective)) next.delete(perspective);
+      else next.add(perspective);
+      return next;
+    });
+  }
 
   const recentPlaces = places
     ? [...places].sort((a, b) => ((a.visitedAt ?? "") < (b.visitedAt ?? "") ? 1 : -1)).slice(0, 4)
     : [];
+
+  const mapPlaces = (places ?? []).filter((place) => mapFilters.has(place.perspective));
 
   const coverageTotal = coverageSplit.shared + coverageSplit.partnerA + coverageSplit.partnerB;
   const coveragePercent = Math.round((journeyStats.provincesVisited / journeyStats.provincesTotal) * 100);
@@ -131,16 +147,31 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="hidden flex-col gap-1.5 rounded-2xl bg-secondary/70 p-3 sm:flex">
-              <LegendRow colorClass="bg-entity-shared" label={`Cùng nhau (${coverageSplit.shared})`} />
-              <LegendRow colorClass="bg-entity-partner-a" label={`Bạn trai (${coverageSplit.partnerA})`} />
-              <LegendRow colorClass="bg-entity-partner-b" label={`Bạn gái (${coverageSplit.partnerB})`} />
+            <div className="hidden flex-col gap-1 rounded-2xl bg-secondary/70 p-3 sm:flex">
+              <LegendFilterRow
+                colorClass="bg-entity-shared"
+                label={`Cùng nhau (${coverageSplit.shared})`}
+                checked={mapFilters.has("shared")}
+                onToggle={() => toggleMapFilter("shared")}
+              />
+              <LegendFilterRow
+                colorClass="bg-entity-partner-a"
+                label={`Bạn trai (${coverageSplit.partnerA})`}
+                checked={mapFilters.has("partnerA")}
+                onToggle={() => toggleMapFilter("partnerA")}
+              />
+              <LegendFilterRow
+                colorClass="bg-entity-partner-b"
+                label={`Bạn gái (${coverageSplit.partnerB})`}
+                checked={mapFilters.has("partnerB")}
+                onToggle={() => toggleMapFilter("partnerB")}
+              />
               <LegendRow colorClass="bg-muted-foreground/40" label={`Chưa đặt chân (${journeyStats.provincesTotal - coverageTotal})`} muted />
             </div>
           </div>
 
           <div className="relative z-10 my-3 h-80 w-full overflow-hidden rounded-2xl sm:h-96">
-            <JourneyMap places={places ?? []} />
+            <JourneyMap places={mapPlaces} />
           </div>
 
           <div className="relative z-10 flex w-full flex-col items-center justify-between gap-3 rounded-2xl bg-secondary/70 p-3 sm:flex-row">
@@ -550,5 +581,36 @@ function LegendRow({ colorClass, label, muted }: { colorClass: string; label: st
       <span className={`size-2 rounded-full ${colorClass}`} />
       <span>{label}</span>
     </div>
+  );
+}
+
+function LegendFilterRow({
+  colorClass,
+  label,
+  checked,
+  onToggle,
+}: {
+  colorClass: string;
+  label: string;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      onClick={onToggle}
+      className={`flex items-center gap-1.5 rounded-md px-1 py-0.5 text-xs transition-colors hover:bg-background/60 ${checked ? "" : "text-muted-foreground/50"}`}
+    >
+      <span
+        className={`flex size-3.5 shrink-0 items-center justify-center rounded-[4px] border ${
+          checked ? `${colorClass} border-transparent` : "border-muted-foreground/40"
+        }`}
+      >
+        {checked && <Check className="size-2.5 text-white" strokeWidth={3} />}
+      </span>
+      <span>{label}</span>
+    </button>
   );
 }
