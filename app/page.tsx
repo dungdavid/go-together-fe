@@ -28,6 +28,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import JourneyMap from "@/components/dashboard/journey-map-loader";
 import { PerspectiveChip } from "@/components/dashboard/perspective-chip";
 import { BoardingPassModal } from "@/components/boarding-pass/boarding-pass-modal";
+import { LandingPage } from "@/components/landing/landing-page";
 import { useAuth } from "@/lib/auth-context";
 import { usePlace, usePlaces } from "@/lib/api";
 import { useLiveWeather, type WeatherCondition } from "@/lib/use-live-weather";
@@ -56,7 +57,7 @@ const weatherIcons: Record<WeatherCondition, typeof Sun> = {
 export default function HomePage() {
   const { data: places, isLoading } = usePlaces();
   const { data: latestTrip } = usePlace("ta-xua");
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { status: weatherStatus, weather: liveWeather, retry: retryWeather } = useLiveWeather(isAuthenticated);
   const [isBoardingPassOpen, setIsBoardingPassOpen] = useState(false);
 
@@ -72,6 +73,9 @@ export default function HomePage() {
   const partnerBLen = (coverageSplit.partnerB / journeyStats.provincesTotal) * circumference;
 
   const tripProgress = latestTrip ? checklistProgress(latestTrip) : null;
+
+  if (authLoading) return null;
+  if (!isAuthenticated) return <LandingPage />;
 
   return (
     <div className="pb-24 md:pb-10">
